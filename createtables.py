@@ -2,6 +2,7 @@ import sqlite3
 import csv
 import os
 
+
 def create_tables(conn):
     """Create SQL tables From text files
 
@@ -9,10 +10,11 @@ def create_tables(conn):
        conn (:obj: `database connection`): connection to the database to
            save the tables
     """
-    #Cursor object
+    # Cursor object
     cur = conn.cursor()
-    #get the text files in the CEIRS folder
-    current_files = os.listdir(os.chdir(r'\\win.ad.jhu.edu\cloud\sddesktop$\CEIRS'))
+    # get the text files in the CEIRS folder
+    os.chdir("..")
+    current_files = os.listdir(os.getcwd())
     current_files = [filename
                      for filename in current_files
                      if filename.endswith('.txt')
@@ -24,8 +26,8 @@ def create_tables(conn):
             table_data = [row
                           for row in csvreader
                           ]
-            #Create Table Statement
-            table_title = filename.replace(".txt","")
+            # Create Table Statement
+            table_title = filename.replace(".txt", "")
             drop_table_sql = """DROP TABLE IF EXISTS {}""".format(table_title)
             create_table_sql = """CREATE TABLE {} ({})""".format(
                 table_title, table_fields)
@@ -33,16 +35,14 @@ def create_tables(conn):
             cur.execute(drop_table_sql)
             cur.execute(create_table_sql)
 
-            #Insert Values Statement
+            # Insert Values Statement
             for table_row in table_data:
                 transform = "'{}'"
-                data_as_text = ",".join([transform.format(item.replace("'","").replace(",",""))
-                                for item in table_row
-                                ])
+                data_as_text = ",".join([transform.format(item.replace("'", "").replace(",", ""))for item in table_row])
                 insert_sql = """INSERT INTO {} VALUES ({})""".format(
                     table_title, data_as_text)
                 cur.execute(insert_sql)
-            #Commit the changes
+            # Commit the changes
             conn.commit()
             print("Done Creating table {}".format(table_title))
 
@@ -53,5 +53,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-            
-    

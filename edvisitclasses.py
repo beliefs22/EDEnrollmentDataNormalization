@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 class ADT:
     """Represents Admit and Discharge Times
 
@@ -16,7 +17,6 @@ class ADT:
         dispo (str): the patients final disposition can be ADMIT, DISCHARGE,
             Hospital Observation, or Screened and Left
     """
-
 
     def __init__(self, date, time, status, dispo):
         self._date = date
@@ -44,27 +44,28 @@ class ADT:
         """str: final dispotion of the patient"""
         return self._dispo
 
+
 class Vitals:
     """Represents a Vital sign value
     Args:
+        flowsheet_name (str): the name of the lab: Temp, BP, Pulse, etc
         value (str): the value of the vital sign: 35.5
         date_time (str): the lab collect date and time YYYY-MM-DD H:M:S
-        flowshet_name (str): the name of the lab: Temp, BP, Pulse, etc
 
     Attributes:
+        flowsheet_name(str): the name of the vital sign: Pulse, BP, etc
         value (str): the result of the vital sign: 7.35
         date_time (str): the time the vital sign was taken YYYY-MM-DD HH:MM:SS
         date (str): date the vital sign was collected
         time (str): time the vital sign was collected
-        flowsheet_name(str): the name of the vital sign: Pulse, BP, etc
-     
+
         """
 
     def __init__(self, flowsheet_name, date_time, value):
-        self._value = value
-        self._date_time = date_time
-        self._date, self._time = date_time.split(" ")
         self._flowsheet_name = flowsheet_name
+        self._date_time = date_time
+        self._value = value
+        self._date, self._time = date_time.split(" ")
 
     @property
     def value(self):
@@ -92,7 +93,6 @@ class Vitals:
         """str: the component being resulted: Sodium"""
         return self._flowsheet_name
 
-
     def check_time(self, time_to_check):
         """Checks if vital sign value was taken before a given time
 
@@ -103,7 +103,6 @@ class Vitals:
         
         time_to_check = datetime.strptime(time_to_check, '%Y-%m-%d %H:%M:%S')
         lab_time = datetime.strptime(self._date_time, '%Y-%m-%d %H:%M:%S')
-        time_delta = time_to_check - lab_time
 
         return time_to_check >= lab_time
 
@@ -172,8 +171,8 @@ class Lab:
         
         time_to_check = datetime.strptime(time_to_check, '%Y-%m-%d %H:%M:%S')
         lab_time = datetime.strptime(self._date_time, '%Y-%m-%d %H:%M:%S')
-        time_delta = time_to_check - lab_time
         return time_to_check >= lab_time
+
 
 class Medication:
     """Represents a medication that was given
@@ -184,7 +183,7 @@ class Medication:
             YYYY-MM-DD HH:MM:SS
         route (str): medication admin route: oral, IV, IM
         theraclass (str): the medications class: ANTIVIAL, ANTIBIOTIC etc
-        outpt_intpt (str): tells if the medication was ordered in the hospittal
+        outpt_inpt (str): tells if the medication was ordered in the hospittal
             or ordered for discharge
     Attributes:
         name (str): name of the medication
@@ -193,7 +192,7 @@ class Medication:
         time (str): time the lab was collected
         route (str): medication admin route: oral, IV, IM
         theraclass (str): the medications class: ANTIVIRAL, ANTIBIOTIC, ect
-        outpt_intpt (str): ordered in the hospital or for discharge
+        outpt_inpt (str): ordered in the hospital or for discharge
         """
 
     def __init__(self, name, date_time, route, theraclass, outpt_inpt):
@@ -213,6 +212,7 @@ class Medication:
     def date_time(self):
         """str: date and time medication was ordered YYYY-MM-DD HH:MM:SS"""
         return self._date_time
+
     @property
     def date(self):
         """str: date the medication was ordered"""
@@ -248,11 +248,9 @@ class Medication:
         
         time_to_check = datetime.strptime(time_to_check, '%Y-%m-%d %H:%M:%S')
         med_time = datetime.strptime(self._date_time, '%Y-%m-%d %H:%M:%S')
-        time_delta = time_to_check - med_time
         return time_to_check >= med_time
 
 
-    
 class Imaging:
     """Represents Imaging done
 
@@ -268,7 +266,6 @@ class Imaging:
         name (str): name of image: Chest XRAY , Chest CT
         status (str): completed or cancelled
     """
-
 
     def __init__(self, name, date_time, status):
         self._name = name
@@ -299,6 +296,7 @@ class Imaging:
     @property
     def date_time(self):
         """str: date and time imaging was done YYYY-MM-DD HH:MM:SS"""
+        return self._date_time
 
     def check_time(self, time_to_check):
         """Checks if image was resulted before a given time
@@ -310,5 +308,4 @@ class Imaging:
         
         time_to_check = datetime.strptime(time_to_check, '%Y-%m-%d %H:%M:%S')
         order_time = datetime.strptime(self._date_time, '%Y-%m-%d %H:%M:%S')
-        time_delta = time_to_check - lab_time
         return time_to_check >= order_time

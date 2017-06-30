@@ -1,11 +1,10 @@
 import geteddata
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict
 import sqlite3
 import os
-from datetime import datetime
 import csv
-from edvisitclasses import ADT, Lab, Medication, Imaging
 from edhelpers import *
+import comparedata
 
 
 class OrderedDefaultDict(OrderedDict):
@@ -33,7 +32,6 @@ def edvisit(subject_id, conn):
         returns two ordered default dictionaires with data for writing to file
         one with human readable data, and one with machien readable data
     """
-    cur = conn.cursor()
 
     human_readable_data = human = OrderedDefaultDict()
     machine_data = machine = OrderedDefaultDict()
@@ -66,16 +64,21 @@ def edvisit(subject_id, conn):
 
 
 def main():
-    conn = sqlite3.connect(r"\\win.ad.jhu.edu\cloud\sddesktop$\CEIRS\CEIRS.db")
-    #Get subject IDs
+    #Get File Path for Database and Patient data
+    #Get Base File Path
+    os.chdir("..")
+    base_path = os.getcwd()
+    sep = os.sep
+    patient_data_path = base_path + sep + "Patient_Data"
+    conn = sqlite3.connect(r"{}{}CEIRS.db".format(base_path,sep))
+    # Get subject IDs
     cur = conn.cursor()
     sql = """SELECT DISTINCT STUDYID FROM Demographics"""
     cur.execute(sql)
     subject_ids = cur.fetchall()
-    patient_data_path = r'\\win.ad.jhu.edu\cloud\sddesktop$\CEIRS\Patient_Data'
     sep = os.sep
-    #Get ED Enrollment Headers
-    ed_enrollment_header_file = open(patient_data_path + sep + 'ed_enrollment_headers.csv', 'r')
+    # Get ED Enrollment Headers
+    ed_enrollment_header_file = open(r"{}{}ed_enrollment_headers.csv".format(patient_data_path, sep), 'r')
     ed_header_reader = csv.DictReader(ed_enrollment_header_file)
     ed_enrollment_headers = ed_header_reader.fieldnames
     data_for_redcap = list()
@@ -83,14 +86,16 @@ def main():
     for subject_id in subject_ids:
         subject_id = "'{}'".format(subject_id[0])
         subject_id_for_file = subject_id.replace("'","")
-        with open(patient_data_path + sep + "{}_data.txt".format(
-            subject_id_for_file),'w') as outfile1:
-            #Write Files for Coordinators to Read
+        with open(patient_data_path + sep + "{}_data.txt".format(subject_id_for_file),'w') as outfile1:
+            # Write Files for Coordinators to Read
+            print("Writing Human Data File for Subject {}".format(subject_id_for_file))
             human_readable_data, machine_data = edvisit(subject_id, conn)
             for key,value in human_readable_data.items():
-                print("{}: {}".format(key, value), file=outfile1)
-            #Data to import into redcap
+                outfile1.write("{}: {}\n".format(key, value))
+            # Data to import into redcap
             data_for_redcap.append(machine_data)
+    print("Finished writing all human files")
+    print("Starting write to redcap data file")
     with open(patient_data_path + sep + "redcap_data.csv", 'w') as outfile2:
         redcap_file = csv.DictWriter(
             outfile2, fieldnames=ed_enrollment_headers, restval='No Data',
@@ -98,6 +103,12 @@ def main():
         redcap_file.writeheader()
         for row in data_for_redcap:
             redcap_file.writerow(row)
+    print("Finished writing all data files")
+    # create comparison file to compare manual data to auto data
+    print("Writing Comparison File")
+    comparedata.compare()
+    print("Finished writing compare file")
+    print("All Done!")
 
             
 
