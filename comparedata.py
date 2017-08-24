@@ -20,10 +20,11 @@ def compare():
     # Get Base Path
     os.chdir("..")
     base_path = os.getcwd()
-    patient_data_path = r"{}Patient_Data".format(base_path,)
-    automated_data_file ='{}{}redcap_data.csv'.format(patient_data_path, os.sep)
-    manual_data_file_15 = '{}{}manually_pulled_ed_enrollment.csv'.format(patient_data_path, os.sep)
-    compare_filename = '{}{}comparison.csv'.format(patient_data_path,os.sep)
+    patient_data_path = r"{}{}Patient_Data".format(base_path, os.sep)
+    automated_data_file = r"{}{}redcap_data.csv".format(patient_data_path, os.sep)
+    manual_data_file_15 = r"{}{}manually_pulled_ed_enrollment.csv".format(patient_data_path, os.sep)
+    compare_filename = r"{}{}comparison.csv".format(patient_data_path,os.sep)
+    print(patient_data_path, automated_data_file, manual_data_file_15, compare_filename, sep="\n")
 
     # Get data from files
     with open(automated_data_file,'r') as automated_file, open(manual_data_file_15, 'r') as manual_15_file,\
@@ -33,17 +34,19 @@ def compare():
         automated_reader = csv.DictReader(automated_file)
         automated_data = OrderedDefaultDict()
         for row in automated_reader:
-            automated_data[row['id']] = row
+            row.update({"manual_or_auto":"auto"})
+            automated_data[row['id'].lower()] = row
 
 
         # Manual data 15
         manual_15_reader = csv.DictReader(manual_15_file)
         manual_15_data = OrderedDefaultDict()
         for row in manual_15_reader:
-            manual_15_data[row['id']] = row
+            row.update({"manual_or_auto":"manual"})
+            manual_15_data[row['id'].lower()] = row
 
         # Create Comparison file
-        field_names = automated_reader.fieldnames
+        field_names = automated_reader.fieldnames + ['manual_or_auto']
         compare_file_writer = csv.DictWriter(compare_file, fieldnames=field_names, restval='No Data', lineterminator='\n')
         compare_file_writer.writeheader()
         study_ids = set(list(automated_data.keys()) + list(manual_15_data.keys()))
@@ -53,7 +56,29 @@ def compare():
             if automated_data.get(study_id) and manual_15_data.get(study_id):
                 compare_file_writer.writerow(automated_data[study_id])
                 compare_file_writer.writerow(manual_15_data[study_id])
+            else:
+                print(study_id)
 
+# def accuracy_check():
+#     """Creates Comparison file of Automated Data and Manual Data"""
+#     # Get Base Path
+#     os.chdir("..")
+#     base_path = os.getcwd()
+#     patient_data_path = r"{}{}Patient_Data".format(base_path, os.sep)
+#     automated_data_file = r"{}{}redcap_data.csv".format(patient_data_path, os.sep)
+#     manual_data_file_15 = r"{}{}manually_pulled_ed_enrollment.csv".format(patient_data_path, os.sep)
+#     compare_filename = r"{}{}comparison.csv".format(patient_data_path,os.sep)
+#     print(patient_data_path, automated_data_file, manual_data_file_15, compare_filename, sep="\n")
+#
+#     # Get data from files
+#     with open(automated_data_file,'r') as automated_file, open(manual_data_file_15, 'r') as manual_15_file,\
+#             open(compare_filename, 'w') as compare_file:
+#
+#         automated_reader = csv.DictReader(automated_file)
+#         manual_reader = csv.DictReader(manual_file)
+#
+#         auto_data = {subject_id : data
+#                      for subject_id, data in automated_reader
 def main():
     compare()
 

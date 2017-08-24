@@ -1,5 +1,5 @@
 import geteddata as ed
-from edvisitclasses import ADT, Vitals, Lab, Medication, Imaging
+from edvisitclasses import ADT, Vitals, Lab, Medication, Medication2, Imaging
 from collections import defaultdict
 from datetime import datetime
 
@@ -24,8 +24,8 @@ def get_arrival_info(human, machine, subject_id, conn):
     arrival_info = ADT(*ed.arrival_date_time(subject_id, conn))
     human['Arrival Date'] = arrival_info.date
     human['Arrival Time'] = arrival_info.time
-    machine['as_edenroll_arrived'] = arrival_info.date
-    machine['as_edenroll_arrivet'] = arrival_info.time
+    machine['edenrollchart_arrivaldate'] = arrival_info.date
+    machine['edenrollchart_arrivaltime'] = arrival_info.time
 
     return human, machine
 
@@ -46,11 +46,11 @@ def get_discharge_info(human, machine, subject_id, conn):
         returns two ordered default dictionaries - human and machine that
         contain data to write to file
     """
-    discharge_info = ADT(*ed.arrival_date_time(subject_id, conn))
+    discharge_info = ADT(*ed.discharge_date_time(subject_id, conn))
     human['Discharge Date'] = discharge_info.date
     human['Discharge Time'] = discharge_info.time
-    machine['as_edenroll_departd'] = discharge_info.date
-    machine['as_edenroll_departt'] = discharge_info.time
+    machine['edenrollchart_departtime'] = discharge_info.date
+    machine['edenrollchart_temperature'] = discharge_info.time
 
     return human, machine
     
@@ -73,7 +73,7 @@ def get_dispo_info(human, machine, subject_id, conn):
     """
     dispo_info = ADT(*ed.arrival_date_time(subject_id, conn))
     human['Disposition'] = dispo_info.dispo
-    machine['as_edenroll_dispo'] = dispo_info.dispo
+    machine['edenrollchart_dispo_specify'] = dispo_info.dispo
 
     return human, machine
 
@@ -102,31 +102,31 @@ def get_vitals_info(human, machine, subject_id, conn):
     if temp:
         temp = min(temp, key=min_lab)[2]
         human['temp'] = temp
-        machine['as_edenroll_temp'] = temp
+        machine['edenrollchart_temperature'] = temp
     # Resp
     resp = ed.vitals(subject_id, conn, "'Resp'")
     if resp:
         resp = min(resp, key=min_lab)[2]
         human['resp'] = resp
-        machine['as_edenroll_rr'] = resp
+        machine['edenrollchart_respiratoryrate'] = resp
     # Blood Pressure
     bp = ed.vitals(subject_id, conn, "'BP'")
     if bp:
         bp = min(bp, key=min_lab)[2]
         human['bp'] = bp
-        machine['as_edenroll_sbp'] = bp
+        machine['edenrollchart_systolicbloodpressure'] = bp
     # Pulse
     pulse = ed.vitals(subject_id, conn, "'Pulse'")
     if pulse:
         pulse = min(pulse, key=min_lab)[2]
         human['pulse'] = pulse
-        machine['as_edenroll_pulse'] = pulse
+        machine['edenrollchart_pulse'] = pulse
     # O2 SAT
     oxygen_sat = ed.vitals(subject_id, conn, "'SpO2'")
     if oxygen_sat:
         oxygen_sat = min(oxygen_sat, key=min_lab)[2]
         human['Oxgyen Saturation'] = oxygen_sat
-        machine['as_edenroll_o2s'] = oxygen_sat
+        machine['edenrollchart_o2sat'] = oxygen_sat
 
     return human, machine
 
@@ -161,16 +161,16 @@ def get_oxygen_info(human, machine, subject_id, conn):
         if min_oxygen.value in ('Nasal cannula', 'Non-rebreather mask',
                                 'High flow nasal cannula', 'Simple Facemask', 'Trach mask', 'Venturi mask'):
             human['Oxygen sup on arrival'] = "{} Recorded at {}".format(min_oxygen.value, min_oxygen.date_time)
-            machine['as_edenroll_o2sup'] = 'Yes'
-            machine['as_edenroll_o2sup_r'] = min_oxygen.value
+            machine['edenrollchart_o2supplementinitial'] = 'Yes'
+            machine['edenrollchart_o2supplementinitial_route'] = min_oxygen.value
         # Find all oxygen values
         for vital_sign in oxygen_info:
             oxygen = Vitals(*vital_sign)
             if oxygen.value in ('Nasal cannula', 'Non-rebreather mask', 'High flow nasal cannula', 'Simple Facemask',
                                 'Trach mask', 'Venturi mask'):
                 human['Oxygen Supplmentation in ED'] = "{} Recorded At {}, ".format(oxygen.value, oxygen.date_time)
-                machine['as_edenroll_suppoxy_ed'] = 'Yes'
-                machine['as_edenroll_suppoxy_ed'] = oxygen.value
+                machine['edenrollchart_o2supplementanytime'] = 'Yes'
+                machine['edenrollchart_o2supplementanytime_route'] = oxygen.value
 
     return human, machine
 
@@ -199,7 +199,7 @@ def get_lab_info(human, machine, subject_id, conn):
     if ph:
         ph = min(ph, key=min_lab)[0]
         human['ph'] = ph
-        machine['as_edenroll_ph'] = ph
+        machine['edenrollchart_ph'] = ph
     # BUN
     bun_compnames = """LabComponentName = 'BLOOD UREA NITROGEN'
                     OR LabComponentName = 'UREA NITROGEN'"""
@@ -207,25 +207,25 @@ def get_lab_info(human, machine, subject_id, conn):
     if bun:
         bun = min(bun, key=min_lab)[0]
         human['bun'] = bun
-        machine['as_edenroll_bun'] = bun
+        machine['edenrollchart_bun'] = bun
     # Sodium
     sodium = ed.lab(subject_id, conn, "'SODIUM'")
     if sodium:
         sodium = min(sodium, key=min_lab)[0]
         human['sodium'] = sodium
-        machine['as_edenroll_sodium'] = sodium
+        machine['edenrollchart_sodium'] = sodium
     # Glucose
     glucose = ed.lab(subject_id, conn, "'GLUCOSE'")
     if glucose:
         glucose = min(glucose, key=min_lab)[0]
         human['glucose'] = glucose
-        machine['as_edenroll_glucose'] = glucose
+        machine['edenrollchart_glucose'] = glucose
     # Hematocrit
     hematocrit = ed.lab(subject_id, conn, "'HEMATOCRIT'")
     if hematocrit:
         hematocrit = min(hematocrit, key=min_lab)[0]
         human['hematocrit'] = hematocrit
-        machine['as_edenroll_hemocr'] = hematocrit
+        machine['edenrollchart_hematocrit'] = hematocrit
 
     return human, machine
 
@@ -254,7 +254,7 @@ def get_flutesting_info(human, machine, subject_id, conn, dc_time):
     influneza_tests = ed.lab2(subject_id, conn, influenza_compnames)
     influenza_testing = defaultdict(str)
     if influneza_tests:
-        machine['as_edenroll_flutesting'] = 'Yes'
+        machine['edenrollchart_flutest'] = 'Yes'
     for test_result in influneza_tests:
         influenza_lab = Lab(*test_result)
         if influenza_lab.check_time(dc_time) is True:
@@ -299,14 +299,14 @@ def get_flutesting_info(human, machine, subject_id, conn, dc_time):
             test_result = 'positive'
         
         human[influenza_result_name] = influenza_result
-        machine['as_edenroll_flut{}_name'.format(influenza_count)] = test_name
-        machine['as_edenroll_flut{}_testtype'.format(influenza_count)] = testing_type
-        machine['as_edenroll_flut{}_res'.format(influenza_count)] = test_result
-        machine['as_edenroll_flut{}_resd'.format(influenza_count)] = test_date
-        machine['as_edenroll_flut{}_rest'.format(influenza_count)] = test_time                     
+        machine['edenrollchart_flutest{}_name'.format(influenza_count)] = test_name
+        machine['edenrollchart_flutest{}_type'.format(influenza_count)] = testing_type
+        machine['edenrollchart_flutest{}_result'.format(influenza_count)] = test_result
+        machine['edenrollchart_flutest{}_resultdate'.format(influenza_count)] = test_date
+        machine['edenrollchart_flutest{}_resulttime'.format(influenza_count)] = test_time                     
 
     # Record Number of Influenza Test Done
-    machine['as_edenroll_flutests'] = influenza_count
+    machine['edenrollchart_numberflutests'] = influenza_count
 
     return human, machine
     
@@ -339,7 +339,7 @@ def get_othervir_info(human, machine, subject_id, conn, dc_time):
                   OR LabComponentName = 'RSV NAT'"""
     other_virus_tests = ed.lab2(subject_id, conn, othervirus_compnames)
     if other_virus_tests:
-        machine['as_edenroll_othervir'] = 'Yes'
+        machine['edenrollchart_otherrespviruses'] = 'Yes'
     
     othervirus_testing = defaultdict(str)
     for test_result in other_virus_tests:
@@ -373,12 +373,12 @@ def get_othervir_info(human, machine, subject_id, conn, dc_time):
     for othervirus_result_name, othervirus_result in othervirus_testing.items():
         human[othervirus_result_name] = othervirus_result
         test_name, order_time = othervirus_result_name.split("|")
-        machine_link = {'RSV NAT': 'as_edenroll_othervir_rsv',
-                        'RHINOVIRUS NAT': 'as_edenroll_othervir_rhino',
-                        'ADENOVIRUS NAT': 'as_edenroll_othervir_adeno',
-                        'PARAINFLUENZAE 3 NAT': 'as_edenroll_othervir_para',
-                        'PARAINFLUENZAE 2 NAT': 'as_edenroll_othervir_para',
-                        'METAPNEUMO NAT': 'as_edenroll_othervir_meta'
+        machine_link = {'RSV NAT': 'edenrollchart_rsv',
+                        'RHINOVIRUS NAT': 'edenrollchart_rhinovirus',
+                        'ADENOVIRUS NAT': 'edenrollchart_adenovirus',
+                        'PARAINFLUENZAE 3 NAT': 'edenrollchart_parainfluenza',
+                        'PARAINFLUENZAE 2 NAT': 'edenrollchart_parainfluenza',
+                        'METAPNEUMO NAT': 'edenrollchart_metapneumovirus'
                         }
         machine[machine_link[test_name]] = othervirus_result
 
@@ -409,25 +409,26 @@ def get_micro_info(human, machine, subject_id, conn, dc_time):
     searchtext = "'%CULT%'"
     micro_tests = ed.lab3(subject_id, conn, searchtext)
     if micro_tests:
-        machine['as_edenroll_cul'] = 'Yes'
-    for micro_test in micro_tests:
-        micro_lab = Lab(*micro_test)
-        if micro_lab.check_time(dc_time) is True:
-            micro_test_num += 1
-            if micro_test_num > 5:
-                break
-            result = micro_lab.value
-            result_time = micro_lab.date_time
-            test_name = micro_lab.labname
-            result_id = "{}|{}".format(test_name, result_time)
-            if result and result != "No growth":
-                human[result_id] = result
-                machine['as_edenroll_culname{}'.format(micro_test_num)] = test_name
-                machine['as_edenroll_culdate{}'.format(micro_test_num)] = result_time
-                machine['as_edenroll_culorg{}'.format(micro_test_num)] = result
-                machine['as_edenroll_cultype{}'.format(micro_test_num)] = test_name.split(" ")[-1]
-    # Record Number of Micro Test done
-    machine['as_edenroll_culnum'] = micro_test_num
+        for micro_test in micro_tests:
+            micro_lab = Lab(*micro_test)
+            if micro_lab.check_time(dc_time) is True:
+                result = micro_lab.value
+                result_time = micro_lab.date_time
+                test_name = micro_lab.labname
+                test_type = micro_lab.componentname
+                result_id = "{}|{}".format(test_name, result_time)
+                if result and result != "No growth":
+                    micro_test_num += 1
+                    if micro_test_num > 5:
+                        break
+                    machine['edenrollchart_microbiology'] = 'Yes'
+                    human[result_id] = result_id
+                    machine['edenrollchart_culture{}_name'.format(micro_test_num)] = test_name
+                    machine['edenrollchart_culture{}_type'.format(micro_test_num)] = test_type
+                    machine['edenrollchart_culture{}_datecollect'.format(micro_test_num)] = result_time
+                    machine['edenrollchart_culture{}_organisms'.format(micro_test_num)] = result
+        # Record Number of Micro Test done
+        machine['edenrollchart_numberpositivecultures'] = micro_test_num
 
     return human, machine
 
@@ -453,12 +454,12 @@ def get_antiviral_info(human, machine, subject_id, conn, dc_time):
     """
     # ED Antivirals
     ed_antiviral_count = 0
-    ed_antivirals = ed.medication(
-        subject_id, conn, "'ANTIVIRALS'", "'Inpatient'")
+    ed_antivirals = ed.medication2(
+        subject_id, conn, "'ANTIVIRALS'")
     if ed_antivirals:
-        machine['as_edenroll_fluav'] = 'Yes'
+        machine['edenrollchart_antiviral'] = 'Yes'
     for antiviral in ed_antivirals:
-        antiviral_lab = Medication(*antiviral)
+        antiviral_lab = Medication2(*antiviral)
         if antiviral_lab.check_time(dc_time) is True:
             ed_antiviral_count += 1
             if ed_antiviral_count > 2:
@@ -470,16 +471,16 @@ def get_antiviral_info(human, machine, subject_id, conn, dc_time):
             human["ED Antiviral #{}".format(
                 ed_antiviral_count)] = "{} {}".format(
                 med_name, med_route)
-            machine['as_edenroll_fluav{}_name'.format(
+            machine['edenrollchart_antiviral{}_name'.format(
                 ed_antiviral_count)] = med_name
-            machine['as_edenroll_fluav{}route'.format(
+            machine['edenrollchart_antiviral{}_route'.format(
                 ed_antiviral_count)] = med_route
-            machine['as_edenroll_fluav{}date'.format(
+            machine['edenrollchart_antiviral{}_date'.format(
                 ed_antiviral_count)] = order_date
-            machine['as_edenroll_fluav{}time'.format(
+            machine['edenrollchart_antiviral{}_time'.format(
                 ed_antiviral_count)] = order_time
     # Record number of Antivrals
-    machine['as_edenroll_fluavnum'] = ed_antiviral_count
+    machine['edenrollchart_numberantivirals'] = ed_antiviral_count
 
     return human, machine
 
@@ -504,8 +505,8 @@ def get_dc_antiviral_info(human, machine, subject_id, conn, dc_time, dispo):
         returns two ordered default dictionaries - human and machine that
         contain data to write to file
     """
-    if dispo != "Discharge":
-        machine['as_edenroll_fluavdisc'] = 'NA subject not discharged'
+    if dispo not in ("Discharge" ,"Hospitalized Observation"):
+        machine['edenrollchart_antiviraldischarge'] = 'NA subject not discharged'
         return human, machine
 
     # Discharge Antivirals
@@ -513,7 +514,7 @@ def get_dc_antiviral_info(human, machine, subject_id, conn, dc_time, dispo):
     discharge_antivirals = ed.medication(
         subject_id, conn, "'ANTIVIRALS'", "'Outpatient'")
     if discharge_antivirals:
-        machine['as_edenroll_fluavdisc'] = 'Yes'
+        machine['edenrollchart_antiviraldischarge'] = 'Yes'
     for antiviral in discharge_antivirals:
         dc_antiviral_lab = Medication(*antiviral)
         if dc_antiviral_lab.check_time(dc_time) is True:
@@ -526,10 +527,10 @@ def get_dc_antiviral_info(human, machine, subject_id, conn, dc_time, dispo):
                 "Discharge Antiviral #{}".format(
                     discharge_antiviral_count)] = "{} {}".format(
                 med_name, med_route)
-            machine['as_edenroll_fluavdisc{}'.format(
+            machine['edenrollchart_antiviraldischarge{}'.format(
                 discharge_antiviral_count)] = med_name
     # Record number of Dishcarged Antivirals
-    machine['as_edenroll_fluavdiscct'] = discharge_antiviral_count
+    machine['edenrollchart_numberantiviralsdischarge'] = discharge_antiviral_count
 
     return human, machine
 
@@ -555,12 +556,12 @@ def get_antibiotic_info(human, machine, subject_id, conn, dc_time):
     """
     # ED Antibiotics
     ed_antibiotics_count = 0
-    ed_antibiotics = ed.medication(
-        subject_id, conn, "'ANTIBIOTICS'", "'Inpatient'")
+    ed_antibiotics = ed.medication2(
+        subject_id, conn, "'ANTIBIOTICS'")
     if ed_antibiotics:
-        machine['as_edenroll_ab_ed'] = 'Yes'
+        machine['edenrollchart_antibiotic'] = 'Yes'
     for antibiotic in ed_antibiotics:
-        abx_med = Medication(*antibiotic)
+        abx_med = Medication2(*antibiotic)
         if abx_med.check_time(dc_time) is True:
             ed_antibiotics_count += 1
             if ed_antibiotics_count > 5:
@@ -572,16 +573,16 @@ def get_antibiotic_info(human, machine, subject_id, conn, dc_time):
             human["ED Antibiotics #{}".format(
                     ed_antibiotics_count)] = "{} {} {} {}".format(
                     med_name, med_route, order_date, order_time)
-            machine['as_edenroll_ab_ed{}_name'.format(
+            machine['edenrollchart_antibiotic{}_name'.format(
                     ed_antibiotics_count)] = med_name
-            machine['as_edenroll_ab_ed{}date'.format(
+            machine['edenrollchart_antibiotic{}_date'.format(
                     ed_antibiotics_count)] = order_date
-            machine['as_edenroll_ab_ed{}time'.format(
+            machine['edenrollchart_antibiotic{}_time'.format(
                     ed_antibiotics_count)] = order_time
-            machine['as_edenroll_ab_ed{}route'.format(
+            machine['edenrollchart_antibiotic{}_route'.format(
                     ed_antibiotics_count)] = med_route
     # Record number of ED Antibiotics
-    machine['as_edenroll_ab_ed_num'] = ed_antibiotics_count
+    machine['edenrollchart_numberantibiotics'] = ed_antibiotics_count
 
     return human, machine
 
@@ -607,15 +608,15 @@ def get_dc_abx_info(human, machine, subject_id, conn, dc_time, dispo):
         contain data to write to file
     """
 
-    if dispo != "Discharge":
-        machine['as_edenroll_dabx'] = 'NA subject not discharging'
+    if dispo not in ("Discharge" ,"Hospitalized Observation"):
+        machine['edenrollchart_antibioticdischarge'] = 'NA subject not discharging'
         return human, machine
     # Discharge Antibiotics
     discharge_antibiotics_count = 0
     discharge_antibiotics = ed.medication(
         subject_id, conn, "'ANTIBIOTICS'", "'Outpatient'")
     if discharge_antibiotics:
-        machine['as_edenroll_dabx'] = 'Yes'
+        machine['edenrollchart_antibioticdischarge'] = 'Yes'
     for antibiotic in discharge_antibiotics:
         dc_abx_med = Medication(*antibiotic)
         if dc_abx_med.check_time(dc_time) is True:
@@ -629,11 +630,10 @@ def get_dc_abx_info(human, machine, subject_id, conn, dc_time, dispo):
                 "Discharge Antibiotics #{}".format(
                     discharge_antibiotics_count)] = "{} {} {}".format(
                 med_name, med_route, time_ordered)
-            machine[
-                'as_edenroll_dabx{}name'.format(
+            machine['edenrollchart_antibioticdischarge{}_name'.format(
                     discharge_antibiotics_count)] = med_name
     # Record number of Discharge Abx
-    machine['as_edenroll_abxquant'] = discharge_antibiotics_count
+    machine['edenrollchart_numberantibioticsdischarge'] = discharge_antibiotics_count
 
     return human, machine
 
@@ -661,7 +661,7 @@ def get_imaging_info(human, machine, subject_id, conn):
     if chest_xray_ct:
         chest_xray_ct = [Imaging(*item) for item in chest_xray_ct]
         human["Chest Imaging"] = chest_xray_ct[0].name
-        machine['as_edenroll_chest'] = 'Yes'
+        machine['edenrollchart_chestimaging'] = 'Yes'
 
     return human, machine
 
@@ -692,8 +692,8 @@ def get_diagnosis_info(human, machine, subject_id, conn):
     for diagnosis in diagnoses:
         diagnosis_count += 1
         # Record Diagnosis Number
-        machine['as_edenroll_findxnum'] = diagnosis_count
+        machine['edenrollchart_numberdx'] = diagnosis_count
         if diagnosis_count > 3:
             break
-        machine['as_edenroll_findx{}'.format(diagnosis_count)] = diagnosis[0]
+        machine['edenrollchart_dx{}'.format(diagnosis_count)] = diagnosis[0]
     return human, machine

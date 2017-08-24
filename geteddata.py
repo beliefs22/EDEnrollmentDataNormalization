@@ -214,9 +214,8 @@ def medication(subject_id, conn, theraclass, orderingmode):
     sql = """SELECT MedIndexName, TimeOrdered, MedRoute, THERACLASS,
           OrderingMode FROM Medication
           WHERE STUDYID = {} AND THERACLASS = {}
-          AND OrderingMode = {}
-          AND OrderSTatus <> {}""".format(
-              subject_id,theraclass, orderingmode, "'Discontinued'")
+          AND OrderingMode = {}""".format(
+              subject_id,theraclass, orderingmode)
     cur.execute(sql)
     data = cur.fetchall()
 ##    if data:
@@ -224,6 +223,36 @@ def medication(subject_id, conn, theraclass, orderingmode):
 ##            print("found medication")
 ##            print(subject_id, item)
     return data
+
+def medication2(subject_id, conn, theraclass):
+    """Gets medication information for meds givven in hospital from the database
+    Args:
+        subject_id (str): the id of the subject
+        conn: (:obj: `database connection`): connection to the database that
+            contains the data
+        theraclass (str): the class of the medication - ANTIVAL, ATIBIOTIC, etc
+
+    Returns:
+        :obj: `list` of :obj: `tuple`:
+           returns a list of tuples of any medications found. Each tuple will
+           have the following information
+           name (str): medication name
+           date_and_time (str): date and time lab was collected
+           route (str): medication admin route - oral ,IV, IM
+    """
+    cur = conn.cursor()
+    sql = """SELECT MedIndexName, TimeActionTaken, MedRoute
+          FROM MedAdminName
+          WHERE STUDYID = {} AND THERACLASS = {}""".format(
+              subject_id, theraclass)
+    cur.execute(sql)
+    data = cur.fetchall()
+##    if data:
+##        for item in data:
+##            print("found medication")
+##            print(subject_id, item)
+    return data
+
 
 def chest_imaging(subject_id, conn):
     """Gets imaging information from the database
@@ -241,11 +270,8 @@ def chest_imaging(subject_id, conn):
 
     cur = conn.cursor()
     sql = r"""SELECT PROC_NAME, ORDER_TIME, OrderStatus FROM Procedures
-          WHERE STUDYID = {} AND (PROC_NAME = 'CT CHEST W/ CONTRAST'
-          OR PROC_NAME = 'CT CHEST WO CONTRAST'
-          OR PROC_NAME = 'XR CHEST AP ONLY'
-          OR PROC_NAME = 'CT CHEST/ABDOMEN/PELVIS WO CONTRAST'
-          OR PROC_NAME = 'XR CHEST AP AND LATERAL')
+          WHERE STUDYID = {} AND (PROC_NAME LIKE '%CT%'
+          OR PROC_NAME LIKE'%XR%')
           AND OrderStatus = 'Completed'""".format(subject_id)
     cur.execute(sql)
     data = cur.fetchall()

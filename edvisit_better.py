@@ -35,7 +35,7 @@ def edvisit(subject_id, conn):
 
     human_readable_data = human = OrderedDefaultDict()
     machine_data = machine = OrderedDefaultDict()
-    subject_id_for_file = subject_id.replace("'","")
+    subject_id_for_file = subject_id.replace("'","").lower()
     human_readable_data['Study ID'] = subject_id_for_file
     machine_data['id'] = subject_id_for_file
     machine_data['redcap_data_access_group'] = 'jhhs'
@@ -85,7 +85,7 @@ def main():
     
     for subject_id in subject_ids:
         subject_id = "'{}'".format(subject_id[0])
-        subject_id_for_file = subject_id.replace("'","")
+        subject_id_for_file = subject_id.replace("'","").lower()
         with open(patient_data_path + sep + "{}_data.txt".format(subject_id_for_file),'w') as outfile1:
             # Write Files for Coordinators to Read
             print("Writing Human Data File for Subject {}".format(subject_id_for_file))
@@ -105,9 +105,9 @@ def main():
             redcap_file.writerow(row)
     print("Finished writing all data files")
     # create comparison file to compare manual data to auto data
-    print("Writing Comparison File")
-    comparedata.compare()
-    print("Finished writing compare file")
+##    print("Writing Comparison File")
+##    comparedata.compare()
+##    print("Finished writing compare file")
     print("All Done!")
 
             
