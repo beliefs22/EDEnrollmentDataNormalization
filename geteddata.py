@@ -4,7 +4,7 @@ import os
 
 
 def arrival_date_time(subject_id, conn):
-    """Gets arrival date and time from the database
+    """Gets arrival date and time from the demographics table
     Args:
         subject_id (str): the id of the subject whose data you are searching for
         conn (:obj: `database connection`): connection to the database that
@@ -29,7 +29,7 @@ def arrival_date_time(subject_id, conn):
 
 
 def discharge_date_time(subject_id, conn):
-    """Gets discharge date and time from the database
+    """Gets discharge date and time from the demographics table
     Args:
         subject_id (str): the id of the subject whose data you are searching for
         conn (:obj: `database connection`): connection to the database that
@@ -63,7 +63,7 @@ def discharge_date_time(subject_id, conn):
 
 
 def vitals(subject_id, conn, flowsheet_name):
-    """Gets a vitals sign value from the database
+    """Gets a vitals sign value from the Flowsheets table
 
     Args:
         subject_id (str): id of subject
@@ -96,7 +96,7 @@ def vitals(subject_id, conn, flowsheet_name):
 
 
 def lab(subject_id, conn, labcompname):
-    """Gets a lab value from the database
+    """Gets a lab value from the Lab table
     Args:
         subject_id (str): id of the subject
         conn: (:obj: `database connectoin`): connection to the database that
@@ -127,7 +127,7 @@ def lab(subject_id, conn, labcompname):
 
 
 def lab2(subject_id, conn, labcompnames):
-    """Gets a lab value from the database. Used when searchig for multiple lab
+    """Gets a lab value from the lab table. Used when searchig for multiple lab
     types.
     Args:
         subject_id (str): id of the subject
@@ -159,7 +159,7 @@ def lab2(subject_id, conn, labcompnames):
 
 
 def lab3(subject_id, conn, searchtext):
-    """Gets a lab value from the database. Used when searchig for labs by a
+    """Gets a lab value from the labs table. Used when searching for labs by a
     search phrase. For example, labs with CULT in their name.
     Args:
         subject_id (str): id of the subject
@@ -190,7 +190,7 @@ def lab3(subject_id, conn, searchtext):
 
 
 def medication(subject_id, conn, theraclass, orderingmode):
-    """Gets medication information from the database
+    """Gets medication information from the medication table
     Args:
         subject_id (str): the id of the subject
         conn: (:obj: `database connection`): connection to the database that
@@ -225,7 +225,7 @@ def medication(subject_id, conn, theraclass, orderingmode):
     return data
 
 def medication2(subject_id, conn, theraclass):
-    """Gets medication information for meds givven in hospital from the database
+    """Gets medication information for meds givven in hospital from the medication table
     Args:
         subject_id (str): the id of the subject
         conn: (:obj: `database connection`): connection to the database that
@@ -255,7 +255,7 @@ def medication2(subject_id, conn, theraclass):
 
 
 def chest_imaging(subject_id, conn):
-    """Gets imaging information from the database
+    """Gets imaging information from the procedures table
     Args:
         subject_id (str): the id of the subject whose data you are searching for
         conn (:obj: `database connection`): connection to the database that
@@ -283,7 +283,7 @@ def chest_imaging(subject_id, conn):
 
 
 def final_diagnoses(subject_id, conn):
-    """Gets diagnosis information from the database
+    """Gets diagnosis information from the Diagnosis table
     Args:
         subject_id (str): the id of the subject whose data you are searching for
         conn (:obj: `database connection`): connection to the database that

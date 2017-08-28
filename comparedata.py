@@ -57,7 +57,8 @@ def compare():
                 compare_file_writer.writerow(automated_data[study_id])
                 compare_file_writer.writerow(manual_15_data[study_id])
             else:
-                print(study_id)
+                if study_id.find("pro") != -1:
+                    print(study_id)
 
 # def accuracy_check():
 #     """Creates Comparison file of Automated Data and Manual Data"""

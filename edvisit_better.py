@@ -98,7 +98,7 @@ def main():
     print("Starting write to redcap data file")
     with open(patient_data_path + sep + "redcap_data.csv", 'w') as outfile2:
         redcap_file = csv.DictWriter(
-            outfile2, fieldnames=ed_enrollment_headers, restval='No Data',
+            outfile2, fieldnames=ed_enrollment_headers, restval='',
             lineterminator='\n')
         redcap_file.writeheader()
         for row in data_for_redcap:
