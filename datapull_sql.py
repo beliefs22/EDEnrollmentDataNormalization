@@ -114,7 +114,7 @@ def lab(subject_id, conn, labcompname):
     """
 
     cur = conn.cursor()
-    sql = """SELECT ORD_VALUE, SPECIMN_TAKEN_TIME, PROC_NAME, LabComponentName FROM LAB
+    sql = """SELECT ORD_VALUE, SPECIMN_TAKEN_TIME, RESULT_TIME, PROC_NAME, LabComponentName FROM LAB
           WHERE STUDYID = {}
           AND LabComponentName = {}""".format(subject_id,labcompname)
     cur.execute(sql)
@@ -146,7 +146,7 @@ def lab2(subject_id, conn, labcompnames):
     """
            
     cur = conn.cursor()
-    sql = """SELECT ORD_VALUE, SPECIMN_TAKEN_TIME, PROC_NAME, LabComponentName FROM LAB
+    sql = """SELECT ORD_VALUE, SPECIMN_TAKEN_TIME, RESULT_TIME, PROC_NAME, LabComponentName FROM LAB
           WHERE STUDYID = {}
           AND ({})""".format(subject_id, labcompnames)
     cur.execute(sql)
@@ -177,7 +177,7 @@ def lab3(subject_id, conn, searchtext):
            component_name (str): component tested - Hematocrit
     """
     cur = conn.cursor()
-    sql = """SELECT ORD_VALUE, SPECIMN_TAKEN_TIME, PROC_Name, LabComponentName FROM LAB
+    sql = """SELECT ORD_VALUE, SPECIMN_TAKEN_TIME, RESULT_TIME, PROC_Name, LabComponentName FROM LAB
           WHERE STUDYID = {}
           AND PROC_NAME LIKE {}""".format(subject_id, searchtext)
     cur.execute(sql)

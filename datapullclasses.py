@@ -121,13 +121,14 @@ class Lab:
         date (str): date the lab was collected
         time (str): time the lab was collected
         labname (str): the name of the lab: Resp Virus Complex
-        componentname (str): the lab component resulted: Influenza A        
+        componentname (str): the lab component resulted: Influenza A
         """
 
-    def __init__(self, value, date_time, labname, componentname):
+    def __init__(self, value, collect_date_time, result_date_time, labname, componentname):
         self._value = value
-        self._date_time = date_time
-        self._date, self._time = date_time.split(" ")
+        self._collect_date_time = collect_date_time
+        self._result_date_time = result_date_time
+        self._date, self._time = collect_date_time.split(" ")
         self._componentname = componentname
         self._labname = labname
 
@@ -137,9 +138,14 @@ class Lab:
         return self._value
 
     @property
-    def date_time(self):
+    def collect_date_time(self):
         """str: the date and time the lab was collected YYYY-MM-DD HH:MM:SS"""
-        return self._date_time
+        return self._collect_date_time
+
+    @property
+    def result_date_time(self):
+        """str: the date and time the lab was result YYYY-MM-DD HH:MM:SS"""
+        return self._result_date_time
 
     @property
     def date(self):
@@ -168,9 +174,9 @@ class Lab:
             time_to_check (str): time the lab should be collected before
             generally the discharge time
         """
-        
+
         time_to_check = datetime.strptime(time_to_check, '%Y-%m-%d %H:%M:%S')
-        lab_time = datetime.strptime(self._date_time, '%Y-%m-%d %H:%M:%S')
+        lab_time = datetime.strptime(self._collect_date_time, '%Y-%m-%d %H:%M:%S')
         return time_to_check >= lab_time
 
 
