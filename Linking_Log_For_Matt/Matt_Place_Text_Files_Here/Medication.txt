@@ -1,3 +1,1 @@
-STUDY_ID	MEDICATION_ID	MedIndexName	MedRoute	THERACLASS
-0001	001	clindamycin	oral	antibiotic
-0002	002	tamiflu	oral	antiviral
+STUDYID	MEDICATION_ID	display_name	MedIndexName	TimeOrdered	MedRoute	Dose	MedUnit	MIN_DISCRETE_DOSE	THERACLASS	PHARMCLASS	PHARMSUBCLASS	OrderSTatus	OrderClass	OrderingMode	ORDER_MED_ID

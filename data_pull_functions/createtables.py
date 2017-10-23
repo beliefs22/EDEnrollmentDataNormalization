@@ -70,7 +70,7 @@ def med_admin_table_info(conn):
                                        'class': med_class
                                        }
     # TODO: Instead of using * list the fields so its easier to see what fields are used
-    medication_admin_sql = 'SELECT med_id, action_taken, med_dose FROM MEDADMINS'
+    medication_admin_sql = 'SELECT MEDICATION_ID, ACTIONTAKEN, DOSE FROM MEDADMINS'
     cur.execute(medication_admin_sql)
     medication_admins = cur.fetchall()
     medication_admins_with_name_and_route = list()

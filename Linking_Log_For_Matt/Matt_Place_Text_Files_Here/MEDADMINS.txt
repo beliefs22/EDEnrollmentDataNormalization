@@ -1,5 +1,0 @@
-study_id	med_id	action_taken	med_dose
-0001	001	given	20mg
-0002	002	given	200mg
-0003	001	given	20mg
-0003	002	Missed	20mg
