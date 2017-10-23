@@ -55,7 +55,7 @@ def get_sql_data_from_file(filename, delimiter='\t'):
 def med_admin_table_info(conn):
     cur = conn.cursor()
     # Create MedAdminName Table from EdMedication Table and MedicationAdmin tables
-    medication_sql = 'SELECT DISTINCT MEDICATION_ID, MedIndexName, MedRoute, THERACLASS FROM EdMedication'
+    medication_sql = 'SELECT DISTINCT MEDICATION_ID, MedIndexName, MedRoute, THERACLASS FROM Medication'
     cur.execute(medication_sql)
     medication_info = dict()
     medications = cur.fetchall()
@@ -82,7 +82,7 @@ def med_admin_table_info(conn):
             med_route = medication_info[med_id]['route']  # Some meds won't have a route because they weren't given
             med_name = medication_info[med_id]['name']
             med_class = medication_info[med_id]['class']
-            # Do to the way we procude the list. These medications don't have class information in the table
+            # Do to the way we produce the list. These medications don't have class information in the table
             if med_name.lower().find('ampicillin-sulbactam') != -1 or med_name.lower().find('azithromycin') != -1:
                 med_class = 'ANTIBIOTICS'
                 med_route = 'IV'
@@ -115,9 +115,9 @@ def get_data_from_sql_table(conn, sql):
     return cur.fetchall()
 
 
-def create_tables(conn):
+def create_tables(conn, base_dir):
     # create_tables(conn)
-    base_dir = os.path.dirname(__file__)
+    # base_dir = os.path.dirname(__file__)
     data_file_path = os.path.join(base_dir, 'Linking_Log_For_Matt', 'Matt_Place_Text_Files_Here')
     study_id_path = os.path.join(base_dir, 'Linking_Log_For_Matt', 'study_ids_to_pull.csv')
     data_files = [os.path.join(data_file_path, filename)
@@ -137,7 +137,9 @@ def create_tables(conn):
 
 
 def main():
-    create_tables()
+    conn = sqlite3.connect(
+        '/home/beliefs22/PycharmProjects/EDEnrollmentDataNormalization-working/test.db')
+    create_tables(conn)
 
 
 if __name__ == "__main__":

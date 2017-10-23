@@ -1,10 +1,8 @@
-import createtables
-import datapull_sql
-from collections import OrderedDict
-import sqlite3
-import os
 import csv
-from datapull_functions import *
+import os
+import sqlite3
+from collections import OrderedDict
+import data_pull_functions as dpf
 
 
 class OrderedDefaultDict(OrderedDict):
@@ -46,19 +44,21 @@ def edvisit(subject_id, conn):
     redcap_raw['edenrollchart_enrolledined'] = '1'
 
     # Get Discharge time for time checking
-    dc_info = ADT(*datapull_sql.discharge_date_time(subject_id, conn))
+    dc_info = dpf.datapullclasses.ADT(*dpf.datapull_sql.discharge_date_time(subject_id, conn))
     # Get Dispo Status for checking
     dispo = dc_info.dispo
     dc_time = "{} {}".format(dc_info.date, dc_info.time)
     # TODO: turn this into a for loop using a list of
 
-    data_functions_without_times = [get_arrival_info, get_discharge_info, get_dispo_info, get_vitals_info, get_oxygen_info,
-                      get_lab_info, get_imaging_info, get_diagnosis_info]
+    data_functions_without_times = [dpf.get_arrival_info, dpf.get_discharge_info, dpf.get_dispo_info,
+                                    dpf.get_vitals_info, dpf.get_oxygen_info, dpf.get_lab_info, dpf.get_imaging_info,
+                                    dpf.get_diagnosis_info]
     # Functions that require discharge times
-    data_functions_with_dc_times = [get_flutesting_info, get_othervir_info, get_antiviral_info, get_antibiotic_info]
+    data_functions_with_dc_times = [dpf.get_flutesting_info, dpf.get_othervir_info, dpf.get_antiviral_info,
+                                    dpf.get_antibiotic_info]
 
     # Functions that require discharge times and dispo info
-    data_functions_with_dc_times_and_dispo_info = [get_dc_abx_info, get_dc_antiviral_info]
+    data_functions_with_dc_times_and_dispo_info = [dpf.get_dc_abx_info, dpf.get_dc_antiviral_info]
 
     for function in data_functions_without_times:
         coordinator, redcap_label, redcap_raw = function(coordinator, redcap_label, redcap_raw, subject_id, conn)
@@ -76,15 +76,13 @@ def edvisit(subject_id, conn):
 def main():
     # Get File Path for Database and Patient data
     # Get Base File Path
-    os.chdir("..")
-    base_path = os.getcwd()
-    sep = os.sep
-    patient_data_path = base_path + sep + "Patient_Data"
+    base_dir = os.path.dirname(__file__)
+    patient_data_path = os.path.join(base_dir,"Patient_Data")
     conn = sqlite3.connect('test.db')
     # Get subject IDs
     cur = conn.cursor()
     # Create Tables that contain data
-    createtables.create_tables(conn)
+    dpf.createtables.create_tables(conn, base_dir)
     sql = """SELECT study_id, data_pull_complete FROM study_ids_to_pull"""
     cur.execute(sql)
     subject_ids = cur.fetchall()
