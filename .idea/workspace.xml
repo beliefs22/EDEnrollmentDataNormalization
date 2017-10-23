@@ -2,10 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dc927faa-a643-4460-90c0-6c7e1745de31" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/Data Normlization.iml" afterPath="$PROJECT_DIR$/.idea/Data Normlization.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/createtables.py" afterPath="$PROJECT_DIR$/createtables.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rundatapull_ed_enrollment.py" afterPath="$PROJECT_DIR$/rundatapull_ed_enrollment.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -14,36 +15,19 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_TABLE_DETAILS" value="true" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <expand />
+    <select />
+  </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="createtables.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/createtables.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1170">
-              <caret line="4" column="0" lean-forward="false" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#10#0" expanded="true" />
-                <marker date="1508725952478" expanded="true" signature="592:613" ph="DROP TABLE I... " />
-                <marker date="1508725952478" expanded="true" signature="665:685" ph="CREATE TABLE... missing_value" />
-                <marker date="1508725952478" expanded="true" signature="1091:1117" ph="INSERT INTO missing_value... " />
-                <marker date="1508725952478" expanded="true" signature="2131:2214" ph="SELECT DISTI... EdMedication" />
-                <marker date="1508725952478" expanded="true" signature="2831:2883" ph="SELECT med_i... MEDADMINS" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="46" lean-forward="false" selection-start-line="0" selection-start-column="46" selection-end-line="0" selection-end-column="46" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -73,11 +57,12 @@
         <option value="$PROJECT_DIR$/Linking_Log_For_Matt/Matt_Place_Text_Files_Here/Medication.txt" />
         <option value="$PROJECT_DIR$/tabs.py" />
         <option value="$PROJECT_DIR$/Linking_Log_For_Matt/Matt_Place_Text_Files_Here/tabs.py" />
-        <option value="$PROJECT_DIR$/createtables.py" />
         <option value="$PROJECT_DIR$/datapullclasses.py" />
         <option value="$PROJECT_DIR$/datapull_functions.py" />
         <option value="$PROJECT_DIR$/datapull_sql.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/rundatapull_ed_enrollment.py" />
+        <option value="$PROJECT_DIR$/createtables.py" />
       </list>
     </option>
   </component>
@@ -131,7 +116,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/test.db" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -213,6 +198,14 @@
       <option name="presentableId" value="Default" />
       <updated>1505247652325</updated>
     </task>
+    <task id="LOCAL-00001" summary="Added git ignore">
+      <created>1508726083113</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1508726083113</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -222,9 +215,10 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32882884" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32882884" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32882884" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24980783" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -274,6 +268,10 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Added git ignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added git ignore" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
@@ -285,11 +283,11 @@
           <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
-            <marker date="1508725952478" expanded="true" signature="592:613" ph="DROP TABLE I... " />
-            <marker date="1508725952478" expanded="true" signature="665:685" ph="CREATE TABLE... missing_value" />
-            <marker date="1508725952478" expanded="true" signature="1091:1117" ph="INSERT INTO missing_value... " />
-            <marker date="1508725952478" expanded="true" signature="2131:2214" ph="SELECT DISTI... EdMedication" />
-            <marker date="1508725952478" expanded="true" signature="2831:2883" ph="SELECT med_i... MEDADMINS" />
+            <marker date="1508727473553" expanded="true" signature="592:613" ph="DROP TABLE I... " />
+            <marker date="1508727473553" expanded="true" signature="665:685" ph="CREATE TABLE... missing_value" />
+            <marker date="1508727473553" expanded="true" signature="1091:1117" ph="INSERT INTO missing_value... " />
+            <marker date="1508727473553" expanded="true" signature="2131:2214" ph="SELECT DISTI... EdMedication" />
+            <marker date="1508727473553" expanded="true" signature="2831:2883" ph="SELECT med_i... MEDADMINS" />
           </folding>
         </state>
       </provider>
@@ -329,21 +327,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/createtables.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1170">
-          <caret line="4" column="0" lean-forward="false" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-            <marker date="1508725952478" expanded="true" signature="592:613" ph="DROP TABLE I... " />
-            <marker date="1508725952478" expanded="true" signature="665:685" ph="CREATE TABLE... missing_value" />
-            <marker date="1508725952478" expanded="true" signature="1091:1117" ph="INSERT INTO missing_value... " />
-            <marker date="1508725952478" expanded="true" signature="2131:2214" ph="SELECT DISTI... EdMedication" />
-            <marker date="1508725952478" expanded="true" signature="2831:2883" ph="SELECT med_i... MEDADMINS" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Linking_Log_For_Matt/Matt_Place_Text_Files_Here/MEDADMINS.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -359,26 +342,75 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datapull_functions.py">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="760">
-          <caret line="326" column="0" lean-forward="true" selection-start-line="326" selection-start-column="0" selection-end-line="326" selection-end-column="0" />
+        <state relative-caret-position="0">
+          <caret line="0" column="46" lean-forward="false" selection-start-line="0" selection-start-column="46" selection-end-line="0" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/161a4a4f-06ec-496e-8541-4804798cf228/console.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/datapull_sql.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="784">
-          <caret line="248" column="34" lean-forward="true" selection-start-line="248" selection-start-column="34" selection-end-line="248" selection-end-column="34" />
+        <state relative-caret-position="-357">
+          <caret line="243" column="7" lean-forward="true" selection-start-line="243" selection-start-column="7" selection-end-line="243" selection-end-column="7" />
+          <folding>
+            <marker date="1508725952482" expanded="true" signature="612:695" ph="SELECT ADT_A... DEMOGRAPHICS" />
+            <marker date="1508725952482" expanded="true" signature="1496:1580" ph="SELECT ED_DE... DEMOGRAPHICS" />
+            <marker date="1508725952482" expanded="true" signature="1888:1970" ph="SELECT HOSP_... DEMOGRAPHICS" />
+            <marker date="1508725952482" expanded="true" signature="2963:3120" ph="SELECT Flows... Flowsheets" />
+            <marker date="1508725952482" expanded="true" signature="4019:4169" ph="SELECT ORD_V... LAB" />
+            <marker date="1508725952482" expanded="true" signature="5118:5253" ph="SELECT ORD_V... LAB" />
+            <marker date="1508725952482" expanded="true" signature="6224:6370" ph="SELECT ORD_V... LAB" />
+            <marker date="1508725952482" expanded="true" signature="7503:7678" ph="SELECT MedIn... EdMedication" />
+            <marker date="1508725952482" expanded="true" signature="8572:8693" ph="SELECT MedIn... MedAdminName" />
+            <marker date="1508725952482" expanded="true" signature="9436:9624" ph="SELECT PROC_... Procedures" />
+            <marker date="1508725952482" expanded="true" signature="10234:10308" ph="SELECT EpicI... Diagnosis" />
+            <marker date="1508725952482" expanded="true" signature="10508:10549" ph="SELECT DISTI... DEMOGRAPHICS" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/datapull_functions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="46" lean-forward="false" selection-start-line="0" selection-start-column="46" selection-end-line="0" selection-end-column="46" />
+        <state relative-caret-position="1083">
+          <caret line="326" column="0" lean-forward="true" selection-start-line="326" selection-start-column="0" selection-end-line="326" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rundatapull_ed_enrollment.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="888">
+          <caret line="58" column="0" lean-forward="true" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+            <marker date="1508727473665" expanded="true" signature="3407:3447" ph="SELECT STUDY... STUDY_IDS_TO_PULL" />
+            <marker date="1508727473665" expanded="true" signature="3407:3465" ph="SELECT study... study_ids_to_pull" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/createtables.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1992">
+          <caret line="20" column="34" lean-forward="true" selection-start-line="20" selection-start-column="34" selection-end-line="20" selection-end-column="34" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+            <marker date="1508727473553" expanded="true" signature="592:613" ph="DROP TABLE I... " />
+            <marker date="1508727473553" expanded="true" signature="665:685" ph="CREATE TABLE... missing_value" />
+            <marker date="1508727473553" expanded="true" signature="1091:1117" ph="INSERT INTO missing_value... " />
+            <marker date="1508727473553" expanded="true" signature="2131:2214" ph="SELECT DISTI... EdMedication" />
+            <marker date="1508727473553" expanded="true" signature="2831:2883" ph="SELECT med_i... MEDADMINS" />
+          </folding>
         </state>
       </provider>
     </entry>

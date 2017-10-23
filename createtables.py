@@ -115,8 +115,7 @@ def get_data_from_sql_table(conn, sql):
     return cur.fetchall()
 
 
-def main():
-    conn = sqlite3.connect('test.db')
+def create_tables(conn):
     # create_tables(conn)
     base_dir = os.path.dirname(__file__)
     data_file_path = os.path.join(base_dir, 'Linking_Log_For_Matt', 'Matt_Place_Text_Files_Here')
@@ -124,11 +123,9 @@ def main():
     data_files = [os.path.join(data_file_path, filename)
                   for filename in os.listdir(data_file_path)
                   if filename.endswith("txt")]
-
     # Create Study ID table
     table_title, table_fields, table_data = get_sql_data_from_file(study_id_path, delimiter=',')
     create_table(conn, table_title, table_fields, table_data)
-
     # Create Tables from data pulled from EPIC
     for filename in data_files:
         table_title, table_fields, table_data = get_sql_data_from_file(filename)
@@ -137,6 +134,10 @@ def main():
     # Create Table MedAdminName which combines given medications with their name and route information
     table_title, table_fields, table_data = med_admin_table_info(conn)
     create_table(conn, table_title, table_fields, table_data)
+
+
+def main():
+    create_tables()
 
 
 if __name__ == "__main__":

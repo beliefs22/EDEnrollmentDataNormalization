@@ -8,7 +8,6 @@ from datapull_functions import *
 
 
 class OrderedDefaultDict(OrderedDict):
-
     def __init__(self, *a, **kw):
         default_factory = kw.pop('default_factory', self.__class__)
         OrderedDict.__init__(self, *a, **kw)
@@ -36,7 +35,7 @@ def edvisit(subject_id, conn):
     coordinator_readable_data = coordinator = OrderedDefaultDict()
     redcap_label = OrderedDefaultDict()
     redcap_raw = OrderedDefaultDict()
-    subject_id_for_file = subject_id.replace("'","").lower()
+    subject_id_for_file = subject_id.replace("'", "").lower()
     coordinator_readable_data['Study ID'] = subject_id_for_file
     redcap_label['ec_id'] = subject_id_for_file
     # redcap_label['redcap_data_access_group'] = 'jhhs'
@@ -45,43 +44,48 @@ def edvisit(subject_id, conn):
     redcap_raw['ec_id'] = subject_id_for_file
     # redcap_raw['redcap_data_access_group'] = 'jhhs'
     redcap_raw['edenrollchart_enrolledined'] = '1'
-    
-    #Get Discharge time for time checking
+
+    # Get Discharge time for time checking
     dc_info = ADT(*datapull_sql.discharge_date_time(subject_id, conn))
-    #Get Dispo Status for checking
+    # Get Dispo Status for checking
     dispo = dc_info.dispo
     dc_time = "{} {}".format(dc_info.date, dc_info.time)
-    coordinator, redcap_label, redcap_raw = get_arrival_info(coordinator, redcap_label, redcap_raw, subject_id, conn)
-    coordinator, redcap_label, redcap_raw = get_discharge_info(coordinator, redcap_label, redcap_raw, subject_id, conn)
-    coordinator, redcap_label, redcap_raw = get_dispo_info(coordinator, redcap_label, redcap_raw, subject_id, conn)
-    coordinator, redcap_label, redcap_raw = get_vitals_info(coordinator, redcap_label, redcap_raw, subject_id, conn)
-    coordinator, redcap_label, redcap_raw = get_oxygen_info(coordinator, redcap_label, redcap_raw, subject_id, conn)
-    coordinator, redcap_label, redcap_raw = get_lab_info(coordinator, redcap_label, redcap_raw, subject_id, conn)
-    coordinator, redcap_label, redcap_raw = get_flutesting_info(coordinator, redcap_label, redcap_raw, subject_id, conn, dc_time)
-    coordinator, redcap_label, redcap_raw = get_othervir_info(coordinator, redcap_label, redcap_raw, subject_id, conn, dc_time)
-    coordinator, redcap_label, redcap_raw = get_antiviral_info(coordinator, redcap_label, redcap_raw, subject_id, conn, dc_time)
-    coordinator, redcap_label, redcap_raw = get_dc_antiviral_info(coordinator, redcap_label, redcap_raw, subject_id, conn, dc_time, dispo)
-    coordinator, redcap_label, redcap_raw = get_antibiotic_info(coordinator, redcap_label, redcap_raw, subject_id, conn, dc_time)
-    coordinator, redcap_label, redcap_raw = get_dc_abx_info(coordinator, redcap_label, redcap_raw, subject_id, conn, dc_time, dispo)
-    coordinator, redcap_label, redcap_raw = get_imaging_info(coordinator, redcap_label, redcap_raw, subject_id, conn)
-    coordinator, redcap_label, redcap_raw = get_diagnosis_info(coordinator, redcap_label, redcap_raw, subject_id, conn)
+    # TODO: turn this into a for loop using a list of
+
+    data_functions_without_times = [get_arrival_info, get_discharge_info, get_dispo_info, get_vitals_info, get_oxygen_info,
+                      get_lab_info, get_imaging_info, get_diagnosis_info]
+    # Functions that require discharge times
+    data_functions_with_dc_times = [get_flutesting_info, get_othervir_info, get_antiviral_info, get_antibiotic_info]
+
+    # Functions that require discharge times and dispo info
+    data_functions_with_dc_times_and_dispo_info = [get_dc_abx_info, get_dc_antiviral_info]
+
+    for function in data_functions_without_times:
+        coordinator, redcap_label, redcap_raw = function(coordinator, redcap_label, redcap_raw, subject_id, conn)
+
+    for function in data_functions_with_dc_times:
+        coordinator, redcap_label, redcap_raw = function(coordinator, redcap_label, redcap_raw, subject_id, conn,
+                                                         dc_time)
+    for function in data_functions_with_dc_times_and_dispo_info:
+        coordinator, redcap_label, redcap_raw = function(coordinator, redcap_label, redcap_raw, subject_id, conn,
+                                                         dc_time, dispo)
 
     return coordinator, redcap_label, redcap_raw
 
 
 def main():
-    #Get File Path for Database and Patient data
-    #Get Base File Path
+    # Get File Path for Database and Patient data
+    # Get Base File Path
     os.chdir("..")
     base_path = os.getcwd()
     sep = os.sep
     patient_data_path = base_path + sep + "Patient_Data"
-    conn = sqlite3.connect(r"{}{}CEIRS.db".format(base_path,sep))
+    conn = sqlite3.connect('test.db')
     # Get subject IDs
     cur = conn.cursor()
-    #Create Tables that contain data
+    # Create Tables that contain data
     createtables.create_tables(conn)
-    sql = """SELECT STUDYID, DataPullComplete FROM STUDY_IDS_TO_PULL"""
+    sql = """SELECT study_id, data_pull_complete FROM study_ids_to_pull"""
     cur.execute(sql)
     subject_ids = cur.fetchall()
     sep = os.sep
@@ -91,17 +95,17 @@ def main():
     ed_enrollment_headers = ed_header_reader.fieldnames
     labeled_data_for_redcap = list()
     raw_data_for_redcap = list()
-    
+
     for subject_id in subject_ids:
         data_pull_status = subject_id[1]
         if data_pull_status == "No":
             subject_id = "'{}'".format(subject_id[0])
-            subject_id_for_file = subject_id.replace("'","").lower()
-            with open(patient_data_path + sep + "{}_data.txt".format(subject_id_for_file),'w') as outfile1:
+            subject_id_for_file = subject_id.replace("'", "").lower()
+            with open(patient_data_path + sep + "{}_data.txt".format(subject_id_for_file), 'w') as outfile1:
                 # Write Files for Coordinators to Read
                 print("Writing coordinator Data File for Subject {}".format(subject_id_for_file))
                 coordinator_readable_data, redcap_label_data, redcap_raw_data = edvisit(subject_id, conn)
-                for key,value in coordinator_readable_data.items():
+                for key, value in coordinator_readable_data.items():
                     outfile1.write("{}: {}\n".format(key, value))
                 # Data to import into redcap
                 labeled_data_for_redcap.append(redcap_label_data)
@@ -127,7 +131,6 @@ def main():
     print("Finished writing Raw  REDCap data file")
     print("All Done!")
 
-            
 
-if __name__ =="__main__":
+if __name__ == "__main__":
     main()
