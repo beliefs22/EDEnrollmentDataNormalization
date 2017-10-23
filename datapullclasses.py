@@ -178,10 +178,8 @@ class Lab:
         time_to_check = datetime.strptime(time_to_check, '%Y-%m-%d %H:%M:%S')
         lab_time = datetime.strptime(self._collect_date_time, '%Y-%m-%d %H:%M:%S')
         return time_to_check >= lab_time
-
-
 class Medication:
-    """Represents a medication that was given
+    """Represents a base medication class for other to inherit from
 
     Args:
         name (str): name of the medication
@@ -199,78 +197,6 @@ class Medication:
         route (str): medication admin route: oral, IV, IM
         theraclass (str): the medications class: ANTIVIRAL, ANTIBIOTIC, ect
         outpt_inpt (str): ordered in the hospital or for discharge
-        """
-
-    def __init__(self, name, date_time, route, theraclass, outpt_inpt):
-        self._name = name
-        self._date_time = date_time
-        self._date, self._time = date_time.split(" ")
-        self._theraclass = theraclass
-        self._outpt_inpt = outpt_inpt
-        self._route = route
-
-    @property
-    def name(self):
-        """str: name of the medication"""
-        return self._name
-
-    @property
-    def date_time(self):
-        """str: date and time medication was ordered YYYY-MM-DD HH:MM:SS"""
-        return self._date_time
-
-    @property
-    def date(self):
-        """str: date the medication was ordered"""
-        return self._date
-
-    @property
-    def time(self):
-        """str: time the lab was ordered"""
-        return self._time
-
-    @property
-    def theraclass(self):
-        """str: the medications class: ANTIVIRAL, ANTIBIOTIC, etc"""
-        return self._theraclass
-
-    @property
-    def outpt_inpt(self):
-        """str: tells if medication was ordered in hospital or for discharge"""
-        return self._outpt_inpt
-
-    @property
-    def route(self):
-        """str: med admin route"""
-        return self._route
-
-    def check_time(self, time_to_check):
-        """Checks if medication was ordered before a given time
-
-        Args:
-            time_to_check (str): time the med should be ordered before
-            generally the discharge time
-        """
-        
-        time_to_check = datetime.strptime(time_to_check, '%Y-%m-%d %H:%M:%S')
-        med_time = datetime.strptime(self._date_time, '%Y-%m-%d %H:%M:%S')
-        return time_to_check >= med_time
-
-
-class Medication2:
-    """Represents a medication that was given
-
-    Args:
-        name (str): name of the medication
-        date_time (str): the date and time the medication was ordered
-            YYYY-MM-DD HH:MM:SS
-        route (str): medication administration route
-    Attributes:
-        name (str): name of the medication
-        date_time (str): the lab collect date and time YYYY-MM-DD HH:MM:SS
-        date (str): date the lab was collected
-        time (str): time the lab was collected
-        route (str): dose medication was given
         """
 
     def __init__(self, name, date_time, route):
@@ -301,7 +227,7 @@ class Medication2:
 
     @property
     def route(self):
-        """str: tells what the route was based on infusion"""
+        """str: med admin route"""
         return self._route
 
     def check_time(self, time_to_check):
@@ -311,10 +237,47 @@ class Medication2:
             time_to_check (str): time the med should be ordered before
             generally the discharge time
         """
-        
+
         time_to_check = datetime.strptime(time_to_check, '%Y-%m-%d %H:%M:%S')
         med_time = datetime.strptime(self._date_time, '%Y-%m-%d %H:%M:%S')
         return time_to_check >= med_time
+
+
+class EdMedication(Medication):
+    """Represents a medication that was given
+
+    Args:
+        name (str): name of the medication
+        date_time (str): the date and time the medication was ordered
+            YYYY-MM-DD HH:MM:SS
+        route (str): medication admin route: oral, IV, IM
+        theraclass (str): the medications class: ANTIVIAL, ANTIBIOTIC etc
+        outpt_inpt (str): tells if the medication was ordered in the hospittal
+            or ordered for discharge
+    Attributes:
+        name (str): name of the medication
+        date_time (str): the lab collect date and time YYYY-MM-DD HH:MM:SS
+        date (str): date the lab was collected
+        time (str): time the lab was collected
+        route (str): medication admin route: oral, IV, IM
+        theraclass (str): the medications class: ANTIVIRAL, ANTIBIOTIC, ect
+        outpt_inpt (str): ordered in the hospital or for discharge
+        """
+
+    def __init__(self, name, date_time, route, theraclass, outpt_inpt):
+        super().__init__(name, date_time, route)
+        self._theraclass = theraclass
+        self._outpt_inpt = outpt_inpt
+
+    @property
+    def theraclass(self):
+        """str: the medications class: ANTIVIRAL, ANTIBIOTIC, etc"""
+        return self._theraclass
+
+    @property
+    def outpt_inpt(self):
+        """str: tells if medication was ordered in hospital or for discharge"""
+        return self._outpt_inpt
 
  
 class Imaging:

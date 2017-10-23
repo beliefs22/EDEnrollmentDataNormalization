@@ -1,54 +1,61 @@
-import sqlite3
 import csv
 import os
+import sqlite3
 
 
-def create_tables(conn):
-    """Create database tables for each text file provided by Matt
-
-    Args:
-       conn (:obj: `database connection`): connection to the database to
-           save the tables
+def create_table(conn, table_title, table_fields, table_data):
+    """
+    Create a sqlite3 table using the given data
+    :param conn: database connection to the database to store the table
+    :param table_title: title of table
+    :param table_fields: list of the table fields
+    :param table_data: list of the table rows
+    :return: No return
     """
     cur = conn.cursor()
-    #Get Text Files Matt Stored
-    sep = os.sep
-    datafilespath = os.getcwd() + sep + 'Linking_Log_For_Matt' + sep + 'Matt_Place_Text_Files_Here'
-    current_files = os.listdir(datafilespath)
-    current_files = [filename
-                     for filename in current_files
-                     if filename.endswith('.txt')
-                     ]
 
-    for filename in current_files:
-        with open(datafilespath + sep + filename, 'r') as text_file:
-            csvreader = csv.reader(text_file, delimiter='\t')
-            table_fields = ",".join(next(csvreader))
-            table_data = [row
-                          for row in csvreader
-                          ]
-            # Create Table Statement
-            table_title = filename.replace(".txt", "")
-            drop_table_sql = """DROP TABLE IF EXISTS {}""".format(table_title)
-            create_table_sql = """CREATE TABLE {} ({})""".format(
-                table_title, table_fields)
-            print("Creating table {}".format(table_title))
-            cur.execute(drop_table_sql)
-            cur.execute(create_table_sql)
+    # Create Table Statement
+    # We drop tables so that we are always working with most up to date data
+    table_fields = ",".join(table_fields)
+    drop_table_sql = """DROP TABLE IF EXISTS {}""".format(table_title)
+    create_table_sql = """CREATE TABLE {} ({})""".format(
+        table_title, table_fields)
+    print("Creating table {}".format(table_title))
+    cur.execute(drop_table_sql)
+    cur.execute(create_table_sql)
 
-            # Insert Values Statement
-            for table_row in table_data:
-                transform = "'{}'"
-                data_as_text = ",".join([transform.format(item.replace("'", "").replace(",", ""))for item in table_row])
-                insert_sql = """INSERT INTO {} VALUES ({})""".format(
-                    table_title, data_as_text)
-                cur.execute(insert_sql)
-            # Commit the changes
-            conn.commit()
-            print("Done Creating table {}".format(table_title))
+    # Insert Values Statement
+    for table_row in table_data:
+        transform = "'{}'"
+        data_as_text = ",".join(
+            [transform.format(item.replace("'", "").replace(",", "")) for item in table_row])
+        insert_sql = """INSERT INTO {} VALUES ({})""".format(
+            table_title, data_as_text)
+        cur.execute(insert_sql)
+    # Commit the changes
+    conn.commit()
+    print("Done Creating table {}".format(table_title))
 
-    #Create MedAdminName Table from Medication Table and MedicationAdmin tables
-    medication_sql = 'SELECT DISTINCT MEDICATION_ID, MedIndexName, MedRoute, THERACLASS FROM Medication'
+
+def get_sql_data_from_file(filename, delimiter='\t'):
+    with open(filename, 'r') as fin:
+        # Most files we will be working with will be tsv
+        csv_reader = csv.DictReader(fin, delimiter=delimiter)
+        # Assume file has headers
+        # TODO: make option to provide headres for files that don't have headers
+        table_fields = csv_reader.fieldnames
+        table_data = [row.values()
+                      for row in csv_reader
+                      ]
+        # Files with either be in csv or txt format
+        table_title = os.path.basename(filename.replace(".txt", "").replace(".csv", ""))
+        return table_title, table_fields, table_data
+
+
+def med_admin_table_info(conn):
+    cur = conn.cursor()
+    # Create MedAdminName Table from EdMedication Table and MedicationAdmin tables
+    medication_sql = 'SELECT DISTINCT MEDICATION_ID, MedIndexName, MedRoute, THERACLASS FROM EdMedication'
     cur.execute(medication_sql)
     medication_info = dict()
     medications = cur.fetchall()
@@ -57,95 +64,80 @@ def create_tables(conn):
         med_name = medication[1]
         med_route = medication[2]
         med_class = medication[3]
-        if med_route!= "":
+        if med_route:
             medication_info[med_id] = {'name': med_name,
                                        'route': med_route,
                                        'class': med_class
                                        }
-
-    medication_admin_sql = 'SELECT * FROM MEDADMINS'
+    # TODO: Instead of using * list the fields so its easier to see what fields are used
+    medication_admin_sql = 'SELECT med_id, action_taken, med_dose FROM MEDADMINS'
     cur.execute(medication_admin_sql)
     medication_admins = cur.fetchall()
     medication_admins_with_name_and_route = list()
     for medication_admin in medication_admins:
         try:
-            med_id = medication_admin[2]
-            action_taken = medication_admin[4]
-            med_dose = medication_admin[7]
-            med_route = medication_info[med_id]['route']
+            med_id = medication_admin[0]
+            action_taken = medication_admin[1]
+            med_dose = medication_admin[2]
+            med_route = medication_info[med_id]['route']  # Some meds won't have a route because they weren't given
             med_name = medication_info[med_id]['name']
             med_class = medication_info[med_id]['class']
+            # Do to the way we procude the list. These medications don't have class information in the table
             if med_name.lower().find('ampicillin-sulbactam') != -1 or med_name.lower().find('azithromycin') != -1:
                 med_class = 'ANTIBIOTICS'
                 med_route = 'IV'
             if med_name.lower().find('peramivir') != -1:
                 med_class = 'ANTIVIRALS'
                 med_route = 'IV'
+
+            # add name, route , and class fields to medication_admin fields
+            # Med doses that are empty or 0 are are entries in the tables that don't represent a given medication
+            if action_taken not in ("Canceled Entry", "Missed", "Refused") and med_dose not in ("", "0"):
+                medication_admin = list(medication_admin) + [med_name] + [med_route] + [med_class]
+                medication_admins_with_name_and_route.append(medication_admin)
         except KeyError:
-            #Skip meds that don't have route information
-            print(medication_admin)
+            # Skip meds that don't have route information
+            print("did not have a route for {}".format(medication_admin))
             continue
-        #add name, route , and class fields to medication_admin fields
-        if action_taken not in ("Canceled Entry", "Missed", "Refused") and med_dose not in ("", "0"):
-            medication_admin = list(medication_admin) + [med_name] + [med_route] + [med_class]
-            medication_admins_with_name_and_route.append(medication_admin)
 
-    medication_admin_name_table_fields = "studyid, order_med_id, medication_id, TimeActionTaken, ActionTaken, " \
-                                   "MAR_ORIG_DUE_TM, SCHEDULED_TIME, Dose, AdminSite, INFUSION_RATE, InfusionRateUnit, " \
-                                   "DurationToInfuse, Duration_Infuse_Unit, medindexname, medroute, theraclass"
+    medication_admin_name_table_fields = ['medication_id', 'ActionTaken', 'Dose', 'medindexname', 'medroute',
+                                          'theraclass'
+                                          ]
+    table_title = "MedAdminName"
+    table_fields = medication_admin_name_table_fields
+    table_data = medication_admins_with_name_and_route
+    return table_title, table_fields, table_data
 
 
-    table_title = 'MedAdminName'
-    drop_table_sql = """DROP TABLE IF EXISTS {}""".format(table_title)
-    create_table_sql = """CREATE TABLE {} ({})""".format(
-        table_title, medication_admin_name_table_fields)
-    print("Creating table {}".format(table_title))
-    cur.execute(drop_table_sql)
-    cur.execute(create_table_sql)
+def get_data_from_sql_table(conn, sql):
+    cur = conn.cursor()
+    cur.execute(sql)
+    return cur.fetchall()
 
-    # Insert Values Statement
-    for table_row in medication_admins_with_name_and_route:
-        transform = "'{}'"
-        data_as_text = ",".join([transform.format(item.replace("'", "").replace(",", "")) for item in table_row])
-        insert_sql = """INSERT INTO {} VALUES ({})""".format(
-            table_title, data_as_text)
-        cur.execute(insert_sql)
-    # Commit the changes
-    conn.commit()
-    print("Done Creating table {}".format(table_title))
-
-    # Create Study IDs for Data Pull Table
-    visit_log_path = os.getcwd() + sep + 'Linking_Log_For_Matt'
-    with open(visit_log_path + sep + 'Prospective_Linking_Log.csv', 'r') as id_log:
-        csvreader = csv.reader(id_log, delimiter=',')
-        table_fields = ",".join(next(csvreader))
-        table_data = [row
-                      for row in csvreader
-                      ]
-        # Create Table Statement
-        table_title = 'STUDY_IDS_TO_PULL'
-        drop_table_sql = """DROP TABLE IF EXISTS {}""".format(table_title)
-        create_table_sql = """CREATE TABLE {} ({})""".format(
-            table_title, table_fields)
-        print("Creating table {}".format(table_title))
-        cur.execute(drop_table_sql)
-        cur.execute(create_table_sql)
-
-        # Insert Values Statement
-        for table_row in table_data:
-            transform = "'{}'"
-            data_as_text = ",".join([transform.format(item.replace("'", "").replace(",", "")) for item in table_row])
-            insert_sql = """INSERT INTO {} VALUES ({})""".format(
-                table_title, data_as_text)
-            cur.execute(insert_sql)
-        # Commit the changes
-        conn.commit()
-        print("Done Creating table {}".format(table_title))
-    print("Done Creating table {}".format(table_title))
 
 def main():
-    conn = sqlite3.connect(r'\\win.ad.jhu.edu\cloud\sddesktop$\CEIRS\CEIRS.db')
-    create_tables(conn)
+    conn = sqlite3.connect('test.db')
+    # create_tables(conn)
+    base_dir = os.path.dirname(__file__)
+    data_file_path = os.path.join(base_dir, 'Linking_Log_For_Matt', 'Matt_Place_Text_Files_Here')
+    study_id_path = os.path.join(base_dir, 'Linking_Log_For_Matt', 'study_ids_to_pull.csv')
+    data_files = [os.path.join(data_file_path, filename)
+                  for filename in os.listdir(data_file_path)
+                  if filename.endswith("txt")]
+
+    # Create Study ID table
+    table_title, table_fields, table_data = get_sql_data_from_file(study_id_path, delimiter=',')
+    create_table(conn, table_title, table_fields, table_data)
+
+    # Create Tables from data pulled from EPIC
+    for filename in data_files:
+        table_title, table_fields, table_data = get_sql_data_from_file(filename)
+        create_table(conn, table_title, table_fields, table_data)
+
+    # Create Table MedAdminName which combines given medications with their name and route information
+    table_title, table_fields, table_data = med_admin_table_info(conn)
+    create_table(conn, table_title, table_fields, table_data)
+
 
 if __name__ == "__main__":
     main()

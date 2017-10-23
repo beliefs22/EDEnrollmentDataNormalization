@@ -1,7 +1,8 @@
-import datapull_sql as ed
-from datapullclasses import ADT, Vitals, Lab, Medication, Medication2, Imaging
 from collections import defaultdict
 from datetime import datetime
+
+import datapull_sql as ed
+from datapullclasses import ADT, Vitals, Lab, Medication, EdMedication, Imaging
 
 
 def get_arrival_info(coordinator, redcap_label, redcap_raw, subject_id, conn):
@@ -125,7 +126,8 @@ def get_vitals_info(coordinator, redcap_label, redcap_raw, subject_id, conn):
         contain data to write to file
     """
     # Function to find minimums
-    min_lab = lambda x: datetime.strptime(x[1], '%Y-%m-%d %H:%M:%S')
+    def min_lab(x):
+        return datetime.strptime(x[1], '%Y-%m-%d %H:%M:%S')
 
     # Temp
     temp = ed.vitals(subject_id, conn, "'Temp'")
@@ -263,7 +265,9 @@ def get_lab_info(coordinator, redcap_label, redcap_raw, subject_id, conn):
     """
 
     # Function to find minimums
-    min_lab = lambda x: datetime.strptime(x[1], '%Y-%m-%d %H:%M:%S')
+    # TODO: this can become a for loop for each value to search for
+    def min_lab(x):
+        return datetime.strptime(x[1], '%Y-%m-%d %H:%M:%S')
     # PH
     ph = ed.lab(subject_id, conn, "'PH SPECIMEN'")
     if ph and min(ph, key=min_lab)[0] != 'see below':
@@ -567,7 +571,7 @@ def get_antiviral_info(coordinator, redcap_label, redcap_raw, subject_id, conn, 
                            }
 
         for antiviral in ed_antivirals:
-            antiviral_lab = Medication2(*antiviral)
+            antiviral_lab = Medication(*antiviral)
             med_route = antiviral_lab.route
             #Skip meds without proper routes and give after dishcarge from the ED
             if antiviral_lab.check_time(dc_time) is True and med_route_codes.get(med_route):
@@ -636,7 +640,7 @@ def get_dc_antiviral_info(coordinator, redcap_label, redcap_raw, subject_id, con
     if discharge_antivirals:
 
         for antiviral in discharge_antivirals:
-            dc_antiviral_lab = Medication(*antiviral)
+            dc_antiviral_lab = EdMedication(*antiviral)
             if dc_antiviral_lab.check_time(dc_time) is True:
                 discharge_antiviral_count += 1
                 if discharge_antiviral_count < 3:
@@ -696,7 +700,7 @@ def get_antibiotic_info(coordinator, redcap_label, redcap_raw, subject_id, conn,
                            }
 
         for antibiotic in ed_antibiotics:
-            abx_med = Medication2(*antibiotic)
+            abx_med = Medication(*antibiotic)
             med_route = abx_med.route
             if abx_med.check_time(dc_time) is True and med_route_codes.get(med_route):
                 # Record number of ED Antibiotics
@@ -764,7 +768,7 @@ def get_dc_abx_info(coordinator, redcap_label, redcap_raw, subject_id, conn, dc_
     if discharge_antibiotics:
 
         for antibiotic in discharge_antibiotics:
-            dc_abx_med = Medication(*antibiotic)
+            dc_abx_med = EdMedication(*antibiotic)
             if dc_abx_med.check_time(dc_time) is True:
                 discharge_antibiotics_count += 1
                 if discharge_antibiotics_count < 3:
